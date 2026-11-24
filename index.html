@@ -6,7 +6,7 @@
 <title>MétéOG · Devine la réf</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=11">
 <style>
   /* intro */
   #logo { position: fixed; left: 50%; top: 50%; width: min(70vmin, 520px); aspect-ratio: 1; translate: -50% -50%; z-index: 20; }
@@ -98,6 +98,20 @@
     .steps { grid-template-columns: 1fr; }
     .battle { grid-template-columns: 1fr; max-width: 371px; margin-inline: auto; } .vs { font-size: 90px; }
     .reels { grid-template-columns: repeat(2, 1fr); }
+  }
+  /* mobile (Figma M1) : pastille, titre, illustration, puis Instagram et Jouer ; tout sur la grille 20 px */
+  @media (max-width: 640px) {
+    .hero { padding: 96px 0 56px; }
+    .hero-grid > div:first-child { display: contents; }
+    .hero-grid .pill { order: 1; justify-self: start; }
+    .hero-grid h1 { order: 2; }
+    .hero-grid .art { order: 3; max-width: 100%; margin: 8px 0; }
+    .hero-grid .insta { order: 4; }
+    .hero-grid .cta { order: 5; margin-top: 4px; }
+    .hero-grid { gap: 16px; }
+    .battle { max-width: none; }
+    .fighter h3 { font-size: 44px; }
+    .reels { gap: 20px; }
   }
 </style>
 </head>
@@ -202,8 +216,8 @@
 
 <footer><div class="wrap"><img src="assets/METEOG_symbole.svg" alt=""><span class="name">MétéOG</span><a href="#">Conditions générales</a><small>Agence MÉTÉOG · SAÉ 302 · TP22 · IUT de Chambéry</small></div></footer>
 
-<script src="refs.js?v=9"></script>
-<script src="app.js?v=9"></script>
+<script src="refs.js?v=11"></script>
+<script src="app.js?v=11"></script>
 <script>
 // ---- battle de la semaine : on garde son préféré, l'autre est remplacé par un nouveau challenger
 // ponytail: votes gardés dans ce navigateur et jamais affichés ; un serveur + une page admin les rassembleront

@@ -6,9 +6,9 @@
 <title>MétéOG · Jouer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=11">
 <style>
-  .game { padding: 104px 0 72px; position: relative; z-index: 1; }
+  .game { padding-block: 104px 72px; position: relative; z-index: 1; }
   .title { font-size: clamp(54px, 8.5vw, 124px); color: var(--blanc); text-shadow: 5px 5px 0 rgba(22,20,43,.12); }
   .label-big { font: 700 22px/1 "Open Sans", sans-serif; text-transform: uppercase; letter-spacing: -.028em; }
   .side { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
@@ -28,6 +28,16 @@
   /* règles */
   .rules { width: min(1000px, calc(100% - 32px)); padding: 28px 32px; border-radius: 22px; box-shadow: 10px 10px 0 var(--nuit); }
   .rules form { position: relative; }
+  /* menu déroulant « Modes de jeu » (seulement sur la page de jeu) */
+  .modes-dd { position: relative; }
+  .modes-dd .dd { position: absolute; top: calc(100% + 10px); left: 0; min-width: 240px; display: grid; gap: 8px; padding: 12px; background: var(--creme); border: var(--trait); border-radius: 16px; box-shadow: 6px 6px 0 var(--nuit); z-index: 60; animation: ddIn .18s ease-out; }
+  .modes-dd .dd[hidden] { display: none; }
+  .modes-dd .dd a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--blanc); border: var(--trait); border-radius: 12px; font-weight: 700; font-size: 14px; text-transform: uppercase; text-decoration: none; transition: transform .12s; }
+  .modes-dd .dd a:hover { transform: translate(-2px, -2px); background: var(--jaune); }
+  .modes-dd .dd a.cur { background: var(--jaune); }
+  .modes-dd .dd img { width: 30px; }
+  @keyframes ddIn { from { opacity: 0; transform: translateY(-6px); } }
+  @media (max-width: 640px) { .modes-dd .dd { position: static; min-width: 0; margin-top: 10px; box-shadow: none; } }
   .guest { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; padding: 12px 16px; background: var(--rose); border: var(--trait); border-radius: 12px; font-size: 15px; }
   .guest .btn { margin-left: auto; font-size: 13px; padding: 9px 14px; }
   .rules .x { position: absolute; right: 0; top: 0; width: 44px; height: 44px; border: var(--trait); border-radius: 12px; background: var(--brule); color: #fff; font: 700 18px/1 "Open Sans"; cursor: pointer; box-shadow: 3px 3px 0 var(--nuit); }
@@ -114,6 +124,19 @@
   [hidden] { display: none !important; }
 
   @media (max-width: 900px) { .stage { grid-template-columns: 1fr; } .side { align-items: stretch; } .stage .side { order: -1; } .rsteps { grid-template-columns: 1fr; } .rstep .ill { height: 70px; } .rstep .ill img { height: 50px; } .screen { max-width: 520px; width: 100%; margin: 0 auto; } }
+  /* pop-up des règles en mobile : marges de la grille, étapes en ligne */
+  @media (max-width: 640px) {
+    .rules { width: calc(100% - 40px); max-height: calc(100% - 40px); padding: 20px; }
+    .rules .x { width: 38px; height: 38px; }
+    .rules-h { font-size: 36px; -webkit-text-stroke-width: 6px; text-shadow: 4px 4px 0 var(--brule); margin: 12px 0 16px; }
+    .rsteps { gap: 14px; }
+    .rstep { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: center; padding: 10px; }
+    .rstep .ill { height: 60px !important; margin: 0; overflow: hidden; } .rstep .g6 { grid-template-columns: repeat(3, 14px); gap: 3px; } .rstep .g6 i { height: 10px; border-width: 1.5px; border-radius: 3px; } .rstep .t3 { gap: 3px; } .rstep .t3 i { width: 16px; height: 8px; border-width: 1.5px; } .rstep .ill img { height: 44px; } .rstep .ill .play { scale: .7; }
+    .rstep p { font-size: 14px; }
+    .rfoot { gap: 12px; } .rfoot .pts { width: 100%; } .rfoot .btn { width: 100%; justify-content: center; }
+  }
+  /* mobile (Figma M2) : le titre passe au-dessus du HUD et de l'image */
+  @media (max-width: 640px) { .stage { display: flex; flex-direction: column; align-items: stretch; gap: 18px; } .stage > .panel { display: contents; } .stage .title { order: -2; } .stage .side { order: -1; align-items: flex-start; } }
   @media (max-width: 640px) { .hud b { font-size: 24px; } .hud > div { padding: 6px 10px; } .play { width: 110px; height: 110px; font-size: 40px; } }
 </style>
 </head>
@@ -122,7 +145,14 @@
   <a href="index.html" class="slot" aria-label="Accueil MétéOG"><img src="assets/METEOG_symbole.svg" alt=""></a>
   <a href="index.html" class="name">MétéOG</a>
   <nav class="nav">
-    <a class="btn on" href="index.html#modes"><span class="long">Modes de jeu</span><span class="short">Modes</span></a>
+    <div class="modes-dd">
+      <button class="btn on" type="button" id="modesBtn" aria-expanded="false" aria-controls="modesDd"><span class="long">Modes de jeu</span><span class="short">Modes</span> ▾</button>
+      <div class="dd" id="modesDd" hidden>
+        <a href="jeu.html?mode=pixel" data-m="pixel"><img src="assets/02_icone_soleil_nuage.svg" alt="">Image pixelisée</a>
+        <a href="jeu.html?mode=son" data-m="son"><img src="assets/07_icone_vent.svg" alt="">Extrait sonore</a>
+        <a href="jeu.html?mode=associer" data-m="associer"><img src="assets/05_icone_orage.svg" alt="">Associe le son</a>
+      </div>
+    </div>
     <a class="btn" href="classement.html"><span class="long">Classement</span><span class="short">Top</span></a>
     <button class="btn jaune" id="login"><span class="long">Connexion</span><span class="short">Connexion</span></button>
   </nav>
@@ -200,8 +230,8 @@
   </form>
 </dialog>
 
-<script src="refs.js?v=9"></script>
-<script src="app.js?v=9"></script>
+<script src="refs.js?v=11"></script>
+<script src="app.js?v=11"></script>
 <script>
 const $ = s => document.querySelector(s);
 const ROUNDS = 5, TRIES = 3, CHOICES = 6;
@@ -209,7 +239,14 @@ const LEVELS = [8, 18, 40];   // nombre de « gros pixels » sur la largeur, ess
 const SECS = [1, 3, 7];       // durée de l'extrait sonore, essai par essai
 const POINTS = [600, 300, 100]; // points selon l'essai (multipliés par le combo)
 const MODES = { pixel: 'Image pixelisée', son: 'Extrait sonore', associer: 'Associe le son' };
+// « Modes de jeu » ouvre un menu pour changer de mode sans quitter la partie
+const modesBtn = document.querySelector('#modesBtn'), modesDd = document.querySelector('#modesDd');
+const setDd = open => { modesDd.hidden = !open; modesBtn.setAttribute('aria-expanded', open); };
+modesBtn.addEventListener('click', e => { e.stopPropagation(); setDd(modesDd.hidden); });
+document.addEventListener('click', e => { if (!e.target.closest('.modes-dd')) setDd(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setDd(false); });
 const mode = MODES[new URLSearchParams(location.search).get('mode')] ? new URLSearchParams(location.search).get('mode') : 'pixel';
+document.querySelector(`#modesDd a[data-m="${mode}"]`)?.classList.add('cur');
 $('#modeName').textContent = 'Mode ' + MODES[mode].toLowerCase();
 $('#modeTitle').textContent = MODES[mode];
 document.title = 'MétéOG · ' + MODES[mode];

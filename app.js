@@ -53,6 +53,13 @@ function favVideo(pseudo) {
   return VIDEOS.filter(v => votes[v.id]).sort((a, b) => votes[b.id] - votes[a.id])[0];
 }
 
+// menu burger (mobile) : ouvre / ferme la nav de l'en-tête
+const head = document.querySelector('.top');
+head.insertAdjacentHTML('beforeend', '<button class="burger" type="button" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>');
+const burger = head.querySelector('.burger');
+burger.onclick = () => burger.setAttribute('aria-expanded', head.classList.toggle('open'));
+head.querySelector('.nav').addEventListener('click', () => { head.classList.remove('open'); burger.setAttribute('aria-expanded', false); });
+
 // pied de page : liens Instagram et TikTok sur toutes les pages
 // ponytail: liens génériques, à remplacer par les vrais comptes MétéOG
 document.querySelector('footer .wrap')?.insertAdjacentHTML('beforeend', `<div class="socials">

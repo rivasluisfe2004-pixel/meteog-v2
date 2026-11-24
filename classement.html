@@ -6,7 +6,7 @@
 <title>MétéOG · Classement</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=11">
 <style>
   .board { padding: 104px 0 40px; position: relative; overflow: hidden; }
   .board-top { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; }
@@ -52,6 +52,16 @@
   .empty { background: var(--blanc); border: var(--trait); border-radius: 18px; padding: 32px; text-align: center; box-shadow: 6px 6px 0 var(--nuit); }
   .empty p { margin: 10px 0 20px; }
   @media (max-width: 640px) {
+    /* podium empilé : 1er, 2e, 3e, nuages qui se chevauchent sur la largeur de la grille */
+    .clouds { aspect-ratio: auto; display: flex; flex-direction: column; margin-top: 24px; }
+    .cl { position: relative; left: auto !important; top: auto !important; width: 88% !important; }
+    .cl.p1 { order: 1; align-self: center; } .cl.p2 { order: 2; align-self: flex-start; margin-top: -14%; } .cl.p3 { order: 3; align-self: flex-end; margin-top: -14%; }
+    .cl h3, .p2 h3, .p3 h3 { font-size: calc(9cqw * var(--k, 1)); }
+    .cl p, .p2 p, .p3 p { font-size: 11cqw; }
+    .medal { width: 17cqw; font-size: 14cqw; }
+    .p1 .medal { box-shadow: 0 0 0 1.3cqw #FDDA00; } .p2 .medal { box-shadow: 0 0 0 1.3cqw #C9C9C9; } .p3 .medal { box-shadow: 0 0 0 1.3cqw #BA6C4D; }
+    .p2 .medal { left: auto; right: 2%; }
+    .board-top { align-items: start; }
     th { font-size: 14px; } td { font-size: 18px; } td:last-child { font-size: 24px; }
     .hide-sm { display: none; }
   }
@@ -92,7 +102,7 @@
 
 <footer><div class="wrap"><img src="assets/METEOG_symbole.svg" alt=""><span class="name">MétéOG</span><small>Agence MÉTÉOG · SAÉ 302 · TP22 · IUT de Chambéry</small></div></footer>
 
-<script src="app.js?v=9"></script>
+<script src="app.js?v=11"></script>
 <script>
 const MODE = { pixel: 'Pixel', son: 'Son', associer: 'Associer', mixte: 'Mixte' };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

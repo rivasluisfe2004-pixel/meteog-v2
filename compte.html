@@ -6,9 +6,9 @@
 <title>MétéOG · Mon compte</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=11">
 <style>
-  .acc { padding: 100px 0 72px; display: grid; gap: 28px; }
+  .acc { padding-block: 100px 72px; display: grid; gap: 28px; }
 
   /* carte profil */
   .profil { position: relative; border: var(--trait); border-radius: 22px; box-shadow: 8px 8px 0 var(--nuit); overflow: hidden; background: var(--ciel); padding: 28px; }
@@ -101,6 +101,13 @@
     .av { width: 104px; height: 104px; }
     .actions { position: static; order: -1; width: 100%; justify-content: flex-end; }
     .profil .deco img { width: 80px !important; } .profil .deco img:nth-child(3) { display: none; }
+    /* grille mobile : tout tient dans les 335 px entre les marges de 20 px */
+    .acc { grid-template-columns: minmax(0, 1fr); }
+    .actions { justify-content: flex-start; flex-wrap: nowrap; gap: 10px; } .actions .btn { font-size: 12px; padding: 10px 12px; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .stat { padding: 14px; } .stat b { font-size: 30px; }
+    .vitrine { grid-template-columns: minmax(0, 1fr); }
+    .favv { flex-direction: column; align-items: flex-start; }
   }
 </style>
 </head>
@@ -140,8 +147,8 @@
 
 <footer><div class="wrap"><img src="assets/METEOG_symbole.svg" alt=""><span class="name">MétéOG</span><small>Agence MÉTÉOG · SAÉ 302 · TP22 · IUT de Chambéry</small></div></footer>
 
-<script src="refs.js?v=9"></script>
-<script src="app.js?v=9"></script>
+<script src="refs.js?v=11"></script>
+<script src="app.js?v=11"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
