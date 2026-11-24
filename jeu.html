@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MétéOG · Jouer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=9">
+<style>
+  .game { padding: 104px 0 72px; position: relative; z-index: 1; }
+  .title { font-size: clamp(54px, 8.5vw, 124px); color: var(--blanc); text-shadow: 5px 5px 0 rgba(22,20,43,.12); }
+  .label-big { font: 700 22px/1 "Open Sans", sans-serif; text-transform: uppercase; letter-spacing: -.028em; }
+  .side { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+  .hud { align-items: center; }
+  .help { width: 40px; height: 40px; border: var(--trait); border-radius: 50%; background: var(--blanc); font: 400 22px/1 Anton, sans-serif; cursor: pointer; box-shadow: 3px 3px 0 var(--nuit); }
+  .btn.wide { min-width: min(100%, 280px); justify-content: flex-start; }
+  .mini-player { display: flex; align-items: center; gap: 14px; }
+  .mini-player > div { flex: 1; max-width: 300px; }
+  .mini-player small { font: 700 11px/1 "Open Sans", sans-serif; text-transform: uppercase; display: block; margin-top: 6px; }
+  .play.sm { width: 44px; height: 44px; font-size: 16px; background: var(--menthe); box-shadow: 3px 3px 0 var(--nuit); flex: none; }
+  .mini-player .timeline { height: 18px; }
+  .cloud { position: fixed; z-index: 0; width: 220px; height: 90px; pointer-events: none; opacity: .9; animation: drift linear infinite;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 90'%3E%3Cpath fill='%23F4FAFF' d='M30 88a28 28 0 0 1 4-56 40 40 0 0 1 74-14 34 34 0 0 1 56 10 30 30 0 0 1 26 60z'/%3E%3C/svg%3E") no-repeat center/contain; }
+  .c1 { top: 22%; animation-duration: 70s; animation-delay: -10s; } .c2 { top: 62%; width: 280px; height: 114px; animation-duration: 95s; animation-delay: -60s; } .c3 { top: 84%; width: 160px; animation-duration: 55s; animation-delay: -30s; }
+  @keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
+  .end-wrap .title { margin-bottom: 28px; }
+  /* règles */
+  .rules { width: min(1000px, calc(100% - 32px)); padding: 28px 32px; border-radius: 22px; box-shadow: 10px 10px 0 var(--nuit); }
+  .rules form { position: relative; }
+  .guest { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; padding: 12px 16px; background: var(--rose); border: var(--trait); border-radius: 12px; font-size: 15px; }
+  .guest .btn { margin-left: auto; font-size: 13px; padding: 9px 14px; }
+  .rules .x { position: absolute; right: 0; top: 0; width: 44px; height: 44px; border: var(--trait); border-radius: 12px; background: var(--brule); color: #fff; font: 700 18px/1 "Open Sans"; cursor: pointer; box-shadow: 3px 3px 0 var(--nuit); }
+  .rules-h { font-size: clamp(40px, 6vw, 68px); color: var(--blanc); -webkit-text-stroke: 8px var(--nuit); paint-order: stroke fill; text-shadow: 6px 6px 0 var(--brule); margin: 14px 0 22px; }
+  .rsteps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .rstep { background: var(--blanc); border: var(--trait); border-radius: 14px; padding: 12px 12px 16px; box-shadow: 5px 5px 0 var(--nuit); position: relative; }
+  .rstep .n { position: absolute; left: -12px; top: -12px; width: 36px; height: 36px; border: var(--trait); border-radius: 50%; background: var(--jaune); font: 400 20px/30px Anton, sans-serif; text-align: center; }
+  .rstep .ill { height: 100px; border: var(--trait); border-radius: 10px; margin-bottom: 10px; display: grid; place-items: center; }
+  .rstep .ill img { height: 70px; image-rendering: pixelated; }
+  .rstep p { font-size: 15px; line-height: 1.3; font-weight: 700; text-transform: uppercase; }
+  .g6 { display: grid; grid-template-columns: repeat(3, 36px); gap: 6px; } .g6 i { height: 24px; border: 2px solid var(--nuit); border-radius: 6px; background: #fff; } .g6 i.ok { background: var(--menthe); }
+  .t3 { display: flex; gap: 6px; } .t3 i { width: 44px; height: 12px; border: 2px solid var(--nuit); border-radius: 9px; }
+  .rfoot { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 24px; }
+  .rfoot .pts { margin-right: auto; display: flex; gap: 6px; align-items: center; font: 700 13px/1 "Open Sans"; text-transform: uppercase; }
+  .rfoot .pts span { border: var(--trait); border-radius: 999px; padding: 6px 10px; background: #fff; font-weight: 700; }
+  .rfoot .pts span:nth-child(2) { background: var(--jaune); }
+  .check { display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; }
+  .check input { width: 20px; height: 20px; accent-color: var(--nuit); }
+  .game-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+  .game-head h1 { font-size: clamp(54px, 8vw, 104px); }
+  .hud { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
+  .hud > div { border: var(--trait); border-radius: 14px; padding: 8px 14px; box-shadow: 4px 4px 0 var(--nuit); background: var(--blanc); }
+  .hud small { font: 700 11px/1 "Open Sans", sans-serif; text-transform: uppercase; display: block; opacity: .75; }
+  .hud b { font: 400 32px/1.05 Anton, sans-serif; letter-spacing: .02em; }
+  .hud .sc { background: var(--nuit); color: var(--blanc); box-shadow: 4px 4px 0 var(--brule); }
+  .hud .sc b { color: var(--jaune); }
+  .hud .cb { background: var(--brule); color: var(--blanc); rotate: 3deg; }
+  .hud .cb.pop { animation: pop .4s; }
+  @keyframes pop { 40% { transform: scale(1.25); } }
+
+  .stage { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .screen { position: relative; aspect-ratio: 1; width: min(100%, calc(100vh - 220px), 560px); min-width: min(100%, 300px); background: var(--creme); border: var(--trait); border-radius: 20px; box-shadow: 8px 8px 0 var(--nuit); overflow: hidden; }
+  .screen canvas { width: 100%; height: 100%; display: block; }
+  .tag { position: absolute; left: 14px; top: 14px; z-index: 2; }
+  .reveal-title { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 2; background: var(--jaune); border: var(--trait); border-radius: 12px; padding: 10px 14px;
+    font: 400 clamp(24px, 3.4vw, 36px)/1 Anton, sans-serif; text-transform: uppercase; box-shadow: 4px 4px 0 var(--nuit); display: none; }
+  .revealed .reveal-title { display: block; animation: pop .45s; }
+
+  /* lecteur du mode son */
+  .player { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 22px; background: var(--rose); padding: 24px; }
+  .revealed .player { display: none; }
+  .play { width: 140px; height: 140px; border-radius: 50%; background: var(--jaune); border: var(--trait); box-shadow: 6px 6px 0 var(--nuit); font-size: 52px; cursor: pointer; color: var(--nuit); transition: transform .12s, box-shadow .12s; }
+  .play:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--nuit); }
+  .play:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--nuit); }
+  .eq { display: flex; gap: 6px; height: 54px; align-items: end; }
+  .eq i { width: 12px; height: 20%; background: var(--nuit); border-radius: 4px; }
+  .playing .eq i { animation: eq .5s ease-in-out infinite alternate; }
+  .eq i:nth-child(2n) { animation-delay: -.2s !important; } .eq i:nth-child(3n) { animation-delay: -.35s !important; }
+  @keyframes eq { to { height: 100%; } }
+  .timeline { width: min(100%, 360px); height: 22px; border: var(--trait); border-radius: 999px; background: var(--blanc); position: relative; overflow: hidden; }
+  .timeline .unlocked { position: absolute; inset: 0 auto 0 0; background: var(--menthe); border-right: var(--trait); transition: width .3s; }
+  .timeline .head { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--brule); opacity: .85; }
+  .player p { font: 700 14px/1 "Open Sans", sans-serif; text-transform: uppercase; }
+
+  .panel { display: flex; flex-direction: column; gap: 18px; }
+  .tries { display: flex; gap: 8px; max-width: 460px; }
+  .tries i { flex: 1; height: 14px; border: var(--trait); border-radius: 999px; background: var(--blanc); }
+  .tries i.used { background: var(--rouge); } .tries i.now { background: var(--jaune); }
+  .hint { font-size: 17px; line-height: 1.45; max-width: 460px; }
+  .msg { min-height: 52px; border: var(--trait); border-radius: 14px; padding: 14px 16px; font-weight: 700; background: var(--blanc); }
+  .msg.ok { background: var(--menthe); } .msg.ko { background: var(--rose); } .msg.out { background: var(--lavande); }
+  .msg:empty { display: none; }
+  .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 22px; max-width: 460px; }
+  .choices.img { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .choice { text-transform: uppercase; font: 700 14px/1.25 "Open Sans", sans-serif; letter-spacing: -.028em; text-align: left; color: var(--nuit); background: var(--blanc);
+    border: var(--trait); border-radius: 14px; padding: 14px 16px; min-height: 58px; box-shadow: 4px 4px 0 var(--nuit); cursor: pointer; transition: transform .12s, box-shadow .12s; }
+  .choice:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--nuit); background: var(--rose); }
+  .choice:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--nuit); }
+  .choice:disabled { cursor: default; }
+  .choice.bad { background: var(--rose); text-decoration: line-through; opacity: .6; box-shadow: none; }
+  .choice.good { background: var(--menthe); opacity: 1; box-shadow: 4px 4px 0 var(--nuit); }
+  .choices.img .choice { aspect-ratio: 1.3; padding: 12px; display: grid; place-items: center; background: var(--blanc); }
+  .choices.img .choice img { width: 100%; height: 100%; object-fit: contain; }
+  .choices.img .choice.bad { background: var(--rose); }
+  .choices.img .choice.good { background: var(--menthe); }
+  .shake { animation: shake .35s; }
+  @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  .end { text-align: center; max-width: 640px; margin: 0 auto; background: var(--jaune); border: var(--trait); border-radius: 24px; padding: 40px 24px; box-shadow: 10px 10px 0 var(--nuit); }
+  .end h2 { font-size: clamp(48px, 9vw, 88px); }
+  .end .total { font: 400 clamp(64px, 14vw, 120px)/1 Anton, sans-serif; margin: 12px 0 4px; }
+  .end p { font-size: 17px; }
+  .end .row { justify-content: center; margin-top: 24px; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 900px) { .stage { grid-template-columns: 1fr; } .side { align-items: stretch; } .stage .side { order: -1; } .rsteps { grid-template-columns: 1fr; } .rstep .ill { height: 70px; } .rstep .ill img { height: 50px; } .screen { max-width: 520px; width: 100%; margin: 0 auto; } }
+  @media (max-width: 640px) { .hud b { font-size: 24px; } .hud > div { padding: 6px 10px; } .play { width: 110px; height: 110px; font-size: 40px; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="index.html" class="slot" aria-label="Accueil MétéOG"><img src="assets/METEOG_symbole.svg" alt=""></a>
+  <a href="index.html" class="name">MétéOG</a>
+  <nav class="nav">
+    <a class="btn on" href="index.html#modes"><span class="long">Modes de jeu</span><span class="short">Modes</span></a>
+    <a class="btn" href="classement.html"><span class="long">Classement</span><span class="short">Top</span></a>
+    <button class="btn jaune" id="login"><span class="long">Connexion</span><span class="short">Connexion</span></button>
+  </nav>
+</header>
+
+<main class="game wrap">
+  <section class="stage" id="stage">
+    <div class="panel">
+      <h1 class="title" id="modeTitle">Image pixelisée</h1>
+      <div><label>Essais</label><div class="tries" id="tries"></div></div>
+      <p class="hint" id="hint"></p>
+      <div class="mini-player" id="miniPlayer" hidden>
+        <button class="play sm" id="playSm" aria-label="Écouter l’extrait">▶</button>
+        <div><div class="timeline" aria-hidden="true"><div class="unlocked"></div><div class="head"></div></div><small class="clipLabel">Extrait : 1 s</small></div>
+      </div>
+      <h2 class="label-big">Aux choix</h2>
+      <div class="choices" id="choices" role="group" aria-label="Choisis la bonne réf"></div>
+      <div class="msg" id="msg" role="status"></div>
+      <div class="row" style="margin-top:0"><button class="btn wide" id="next" type="button">Passer</button></div>
+    </div>
+
+    <div class="side">
+      <div class="hud">
+        <button class="help" id="help" type="button" aria-label="Revoir les règles">?</button>
+        <div><small>Manche</small><b id="round">1/5</b></div>
+        <div class="sc"><small>Score</small><b id="score">000 000</b></div>
+        <div class="cb" id="comboBox"><small>Combo</small><b id="combo">x1</b></div>
+      </div>
+      <div class="screen" id="screen">
+        <span class="pill tag" id="typeTag">Image pixelisée</span>
+        <canvas id="cv" width="720" height="720"></canvas>
+        <div class="player" id="player" hidden>
+          <button class="play" id="play" aria-label="Écouter l’extrait">▶</button>
+          <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="timeline" aria-hidden="true"><div class="unlocked"></div><div class="head"></div></div>
+          <p class="clipLabel">Extrait : 1 s</p>
+        </div>
+        <div class="reveal-title" id="revealTitle"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="end-wrap" id="end" hidden>
+    <span class="eyebrow" id="modeName"></span>
+    <h1 class="title">Devine la réf.</h1>
+    <div class="end">
+      <span class="pill" style="background:none">Partie terminée</span>
+      <h2 style="margin-top:14px">Bien joué.</h2>
+      <div class="total" id="total">0</div>
+      <p id="rank"></p>
+      <div class="row">
+        <a class="btn nuit big" id="again" href="">Rejouer ▶</a>
+        <a class="btn big" href="classement.html">Classement</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+
+<!-- règles : s'ouvrent au lancement d'un mode -->
+<dialog class="rules" id="rules">
+  <form method="dialog">
+    <span class="pill" id="rulesTag">Image pixelisée</span>
+    <button class="x" value="go" aria-label="Fermer">✕</button>
+    <h2 class="rules-h">Comment jouer ?</h2>
+    <div class="rsteps" id="rsteps"></div>
+    <div class="guest" id="guest" hidden><b>Tu joues en invité.</b> Tes points ne seront pas gardés ni comptés dans le classement.
+      <button class="btn jaune" type="button" id="guestCx">Se connecter</button></div>
+    <div class="rfoot">
+      <div class="pts">Points : <span>600</span><span>300</span><span>100</span> × combo</div>
+      <label class="check"><input type="checkbox" id="noMore"> Ne plus afficher</label>
+      <button class="btn jaune big" value="go">C’est parti ▶</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="refs.js?v=9"></script>
+<script src="app.js?v=9"></script>
+<script>
+const $ = s => document.querySelector(s);
+const ROUNDS = 5, TRIES = 3, CHOICES = 6;
+const LEVELS = [8, 18, 40];   // nombre de « gros pixels » sur la largeur, essai par essai
+const SECS = [1, 3, 7];       // durée de l'extrait sonore, essai par essai
+const POINTS = [600, 300, 100]; // points selon l'essai (multipliés par le combo)
+const MODES = { pixel: 'Image pixelisée', son: 'Extrait sonore', associer: 'Associe le son' };
+const mode = MODES[new URLSearchParams(location.search).get('mode')] ? new URLSearchParams(location.search).get('mode') : 'pixel';
+$('#modeName').textContent = 'Mode ' + MODES[mode].toLowerCase();
+$('#modeTitle').textContent = MODES[mode];
+document.title = 'MétéOG · ' + MODES[mode];
+$('#again').href = `jeu.html?mode=${mode}`;
+
+// ---- tirage des manches et des 6 choix
+const hasImg = r => !!r.image, hasSnd = r => !!(r.son || r.melodie);
+const shuffle = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
+const pool = REFS.filter(r => mode === 'pixel' ? hasImg(r) : mode === 'son' ? hasSnd(r) : hasImg(r) && hasSnd(r));
+const rounds = shuffle(pool).slice(0, ROUNDS).map(ref => {
+  // pixel / son : 6 noms de mèmes ; associer : 6 images
+  const others = REFS.filter(r => r !== ref && (mode !== 'associer' || hasImg(r)));
+  return { ref, choices: shuffle([ref, ...shuffle(others).slice(0, CHOICES - 1)]) };
+});
+// ponytail: tirage aléatoire simple, une même réf peut revenir d'une partie à l'autre
+
+// ---- image pixelisée
+const cv = $('#cv'), cx = cv.getContext('2d'), tmp = document.createElement('canvas'), tx = tmp.getContext('2d');
+function drawPix(img, n) { // n = 0 → image nette
+  cx.fillStyle = '#FFF1D0'; cx.fillRect(0, 0, cv.width, cv.height);
+  const r = Math.min(cv.width / img.naturalWidth, cv.height / img.naturalHeight) * .86;
+  const w = img.naturalWidth * r, h = img.naturalHeight * r, x = (cv.width - w) / 2, y = (cv.height - h) / 2;
+  if (!n) { cx.imageSmoothingEnabled = true; cx.drawImage(img, x, y, w, h); return; }
+  const k = n / Math.max(w, h);
+  tmp.width = Math.max(1, Math.round(w * k)); tmp.height = Math.max(1, Math.round(h * k));
+  tx.clearRect(0, 0, tmp.width, tmp.height); tx.drawImage(img, 0, 0, tmp.width, tmp.height);
+  cx.imageSmoothingEnabled = false; cx.drawImage(tmp, 0, 0, tmp.width, tmp.height, x, y, w, h);
+}
+const loadImg = src => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
+
+// ---- son : fichier mp3, ou mélodie de démo jouée par le navigateur
+let actx, stopSound = () => {};
+const NOTE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+const freq = n => { const [, l, s, o] = n.match(/([A-G])(#?)(\d)/); return 440 * 2 ** ((12 * (+o + 1) + NOTE[l] + (s ? 1 : 0) - 69) / 12); };
+function playMelody(str, maxSec) {
+  actx ??= new AudioContext(); actx.resume();
+  const BEAT = .32, start = actx.currentTime + .05, oscs = [];
+  let t = start;
+  for (const tok of str.trim().split(/\s+/)) {
+    const [n, d = '1'] = tok.split(':'), dur = BEAT * parseFloat(d);
+    if (t - start + dur > maxSec + .01) break;
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'square'; o.frequency.value = freq(n);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.07, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + dur * .95);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur); oscs.push(o);
+    t += dur;
+  }
+  stopSound = () => oscs.forEach(o => { try { o.stop(); } catch {} });
+  return t - start;
+}
+function playClip(ref, sec) {
+  stopSound();
+  if (ref.son) {
+    const a = new Audio(ref.son); a.currentTime = ref.debut || 0; a.play().catch(() => {});
+    const t = setTimeout(() => a.pause(), sec * 1000);
+    stopSound = () => { clearTimeout(t); a.pause(); };
+    return sec;
+  }
+  return playMelody(ref.melodie, sec);
+}
+function listen() {
+  const r = cur(), len = playClip(r.ref, SECS[step]);
+  $('#player').classList.add('playing');
+  document.querySelectorAll('.timeline .head').forEach((head, k) => {
+    head.getAnimations().forEach(a => a.cancel());
+    const a = head.animate([{ width: 0 }, { width: (len / SECS.at(-1)) * 100 + '%' }], { duration: len * 1000, easing: 'linear' });
+    if (!k) a.finished.then(() => $('#player').classList.remove('playing'), () => {});
+  });
+}
+$('#play').onclick = $('#playSm').onclick = listen;
+
+// ---- déroulé d'une partie
+let i = 0, step = 0, score = 0, combo = 1, img = null, done = false, best = 1;
+const found = []; // réfs trouvées pendant la partie (pour les stats du compte)
+const cur = () => rounds[i];
+const fmt = n => String(n).padStart(6, '0').replace(/(\d{3})(\d{3})/, '$1 $2');
+const sound = mode !== 'pixel';
+function hud() {
+  $('#round').textContent = `${Math.min(i + 1, rounds.length)}/${rounds.length}`;
+  $('#score').textContent = fmt(score);
+  $('#combo').textContent = 'x' + combo;
+  $('#tries').innerHTML = Array.from({ length: TRIES }, (_, k) => `<i class="${k < step ? 'used' : k === step && !done ? 'now' : ''}"></i>`).join('');
+}
+function msg(text, cls = '') { const m = $('#msg'); m.textContent = text; m.className = 'msg ' + cls; }
+
+async function startRound() {
+  const r = cur(); step = 0; done = false; img = null;
+  $('#screen').classList.remove('revealed');
+  msg(''); $('#next').textContent = 'Passer';
+  $('#typeTag').textContent = { pixel: 'Image pixelisée', son: 'Extrait sonore', associer: 'Associer le son' }[mode];
+  // son : petit lecteur à gauche + image pixelisée ; associer : gros lecteur dans l'écran
+  $('#player').hidden = mode !== 'associer';
+  $('#miniPlayer').hidden = mode !== 'son';
+  $('#hint').textContent = {
+    pixel: 'Quel mème se cache derrière les pixels ? Une erreur rend l’image plus nette.',
+    son: 'Appuie sur ▶, écoute et choisis le bon mème. Une erreur rallonge l’extrait et rend l’image plus nette.',
+    associer: 'Appuie sur ▶, écoute, puis clique sur l’image qui va avec ce son. Une erreur rallonge l’extrait.',
+  }[mode];
+  // les 6 choix
+  const box = $('#choices'); box.innerHTML = ''; box.classList.toggle('img', mode === 'associer');
+  r.choices.forEach(c => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'choice';
+    if (mode === 'associer') { b.innerHTML = '<img alt="">'; b.firstChild.src = c.image; b.ariaLabel = 'Image ' + (r.choices.indexOf(c) + 1); }
+    else b.textContent = c.titre;
+    b.onclick = () => pick(c, b);
+    box.append(b);
+  });
+  cx.fillStyle = '#FFF1D0'; cx.fillRect(0, 0, cv.width, cv.height);
+  img = await loadImg(r.ref.image || 'assets/METEOG_symbole.svg').catch(() => null); // sans image : le logo à la révélation
+  paintClue(); hud();
+}
+function paintClue() {
+  if (mode !== 'associer' && img) drawPix(img, LEVELS[step]);
+  if (!sound) return;
+  document.querySelectorAll('.timeline .unlocked').forEach(u => u.style.width = SECS[step] / SECS.at(-1) * 100 + '%');
+  document.querySelectorAll('.clipLabel').forEach(l => l.textContent = `Extrait : ${SECS[step]} s`);
+}
+function pick(c, b) {
+  if (done || b.disabled) return;
+  if (c === cur().ref) return reveal(true);
+  b.classList.add('bad'); b.disabled = true;
+  miss(mode === 'associer' ? 'Pas cette image.' : `Non, ce n’est pas « ${c.titre} ».`);
+}
+function miss(text) {
+  step++;
+  if (step >= TRIES) return reveal(false);
+  msg(text + ' Indice plus clair !', 'ko');
+  $('#choices').classList.remove('shake'); void $('#choices').offsetWidth; $('#choices').classList.add('shake');
+  paintClue(); hud();
+  if (sound) listen();
+}
+function reveal(win) {
+  const r = cur(); done = true;
+  if (win) {
+    const pts = POINTS[step] * combo; score += pts;
+    msg(`Bien vu ! +${pts} points${combo > 1 ? ` (combo x${combo})` : ''}`, 'ok');
+    found.push(r.ref.titre); best = Math.max(best, combo);
+    combo = Math.min(combo + 1, 5);
+    $('#comboBox').classList.remove('pop'); void $('#comboBox').offsetWidth; $('#comboBox').classList.add('pop');
+  } else { combo = 1; msg(`Raté… c’était « ${r.ref.titre} ».`, 'out'); }
+  // la bonne réponse en vert, puis la bonne image, nette, avec son son
+  [...$('#choices').children].forEach((b, k) => { b.disabled = true; if (r.choices[k] === r.ref) b.classList.add('good'); });
+  $('#screen').classList.add('revealed');
+  $('#revealTitle').textContent = r.ref.titre;
+  if (img) drawPix(img, 0);
+  if (hasSnd(r.ref)) playClip(r.ref, r.ref.son ? 20 : 60);
+  $('#next').textContent = i + 1 < rounds.length ? 'Suivant ▶' : 'Voir mon score ▶';
+  $('#next').focus();
+  hud();
+}
+// un seul bouton : « Passer » pendant la manche (compte comme une erreur), « Suivant » après la révélation
+$('#next').onclick = () => {
+  if (!done) return miss('Passé !');
+  stopSound();
+  if (++i < rounds.length) return startRound();
+  const rank = addScore(score, mode, { found, best, manches: rounds.length });
+  $('#stage').hidden = true; $('#end').hidden = false; scrollTo({ top: 0 });
+  $('#total').textContent = fmt(score);
+  $('#rank').textContent = rank
+    ? `Points ajoutés à ton compte. ${getPseudo()}, tu es ${rank === 1 ? '1er' : rank + 'e'} au classement.`
+    : 'Connecte-toi pour que tes points comptent au classement.';
+  hud();
+};
+
+// ---- règles : à chaque lancement d'un mode, sauf si « Ne plus afficher »
+const RULES = {
+  pixel: [['pix', 'Une image pixelisée apparaît'], ['g6', 'Choisis le bon mème parmi les 6 réponses'], ['t3', 'Raté ? L’image devient plus nette. 3 essais']],
+  son: [['play', 'Appuie sur ▶ et écoute l’extrait'], ['g6', 'Choisis le bon mème parmi les 6 réponses'], ['t3', 'Raté ? L’extrait dure plus longtemps. 3 essais']],
+  associer: [['play', 'Écoute le son'], ['g6', 'Trouve l’image qui va avec parmi les 6'], ['t3', 'Raté ? Le son se rallonge. 3 essais']],
+};
+const ILL = {
+  pix: '<div class="ill" style="background:var(--creme)"><img src="assets/09_icone_arc_en_ciel.svg" alt="" style="filter:blur(0)" id="rpix"></div>',
+  g6: '<div class="ill" style="background:var(--lavande)"><div class="g6"><i></i><i></i><i class="ok"></i><i></i><i></i><i></i></div></div>',
+  t3: '<div class="ill" style="background:var(--rose)"><div class="t3"><i style="background:var(--rouge)"></i><i style="background:var(--jaune)"></i><i style="background:#fff"></i></div></div>',
+  play: '<div class="ill" style="background:var(--menthe)"><span class="play" style="width:60px;height:60px;font-size:22px;display:grid;place-items:center">▶</span></div>',
+};
+const rules = $('#rules'), rulesKey = 'meteog-regles-' + mode;
+$('#rulesTag').textContent = MODES[mode];
+$('#rsteps').innerHTML = RULES[mode].map(([k, p], n) => `<div class="rstep"><span class="n">${n + 1}</span>${ILL[k]}<p>${p}</p></div>`).join('');
+// l'arc-en-ciel de l'étape 1 en vrais gros pixels
+loadImg('assets/09_icone_arc_en_ciel.svg').then(im => {
+  const c = document.createElement('canvas'); c.width = 10; c.height = Math.round(10 * im.naturalHeight / im.naturalWidth);
+  c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); const r = $('#rpix'); if (r) r.src = c.toDataURL();
+}).catch(() => {});
+const openRules = () => { $('#noMore').checked = !!store.get(rulesKey, false); rules.showModal(); };
+rules.addEventListener('close', () => store.set(rulesKey, $('#noMore').checked));
+rules.addEventListener('click', e => { if (e.target === rules) rules.close(); }); // clic à côté = fermer
+$('#help').onclick = openRules;
+// première partie sans compte : on prévient une seule fois que les points ne sont pas gardés
+const guestFirst = !getPseudo() && !store.get('meteog-invite-vu', false);
+$('#guest').hidden = !guestFirst;
+$('#guestCx').onclick = () => { rules.close(); openLogin(); };
+rules.addEventListener('close', () => { if (guestFirst) { store.set('meteog-invite-vu', true); $('#guest').hidden = true; } }, { once: true });
+if (guestFirst || !store.get(rulesKey, false)) openRules();
+
+if (rounds.length) startRound();
+else { $('#stage').innerHTML = '<p class="msg">Aucune réf pour ce mode : ajoute-en dans refs.js.</p>'; }
+</script>
+</body>
+</html>

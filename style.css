@@ -1,0 +1,123 @@
+/* MétéOG · Devine la réf — couleurs et typos de la charte graphique */
+:root {
+  --ciel: #8FD3FF; --nuit: #16142B; --jaune: #FDDA00; --orange: #FF8C00; --brule: #F95900;
+  --brun: #66210B; --blanc: #FDFDFD; --rouge: #E2392B; --marine: #1E2A6B; --rose: #FFB8CC;
+  --menthe: #B6EFD4; --lavande: #C8B8FF; --creme: #FFF1D0;
+  --trait: 3px solid var(--nuit);
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--ciel); color: var(--nuit); font-family: "Open Sans", sans-serif; letter-spacing: -.028em; overflow-x: hidden; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+h1, h2, h3, .anton { font-family: Anton, sans-serif; font-weight: 400; letter-spacing: 0; text-transform: uppercase; line-height: .92; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* titres façon jeu vidéo : blanc, contour nuit, ombre décalée */
+.outline { display: inline-block; margin-top: .05em; color: var(--blanc); -webkit-text-stroke: 10px var(--nuit); paint-order: stroke fill; text-shadow: 7px 7px 0 var(--nuit); }
+.c-jaune { color: var(--jaune); } .c-rose { color: var(--rose); } .c-brun { color: var(--brun); } .c-menthe { color: var(--menthe); }
+.pill { display: inline-block; font: 700 13px/1 "Open Sans", sans-serif; letter-spacing: -.028em; text-transform: uppercase; background: var(--jaune); color: var(--nuit); border: var(--trait); border-radius: 999px; padding: 7px 12px; }
+.eyebrow { font: 700 13px/1 "Open Sans", sans-serif; text-transform: uppercase; color: var(--brule); margin-bottom: 10px; display: block; }
+
+/* boutons : contour épais + ombre pleine, s'enfoncent au clic */
+.btn { font: 700 15px/1 "Open Sans", sans-serif; letter-spacing: -.028em; text-transform: uppercase; text-decoration: none; background: var(--blanc); color: var(--nuit);
+  border: var(--trait); border-radius: 12px; padding: 13px 18px; box-shadow: 4px 4px 0 var(--nuit); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: transform .12s, box-shadow .12s; white-space: nowrap; }
+.btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--nuit); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--nuit); }
+.btn:focus-visible, input:focus-visible { outline: 3px solid var(--brule); outline-offset: 3px; }
+.btn.jaune { background: var(--jaune); } .btn.rose { background: var(--rose); } .btn.menthe { background: var(--menthe); }
+.btn.nuit { background: var(--nuit); color: var(--blanc); box-shadow: 4px 4px 0 var(--brule); }
+.btn.nuit:hover { box-shadow: 6px 6px 0 var(--brule); }
+.btn.big { font-size: 18px; padding: 17px 24px; }
+.btn[disabled] { opacity: .45; pointer-events: none; }
+
+/* en-tête */
+.top { position: fixed; inset: 0 0 auto; z-index: 10; display: flex; align-items: center; gap: 10px; padding: 12px 24px; transition: background .25s, box-shadow .25s; }
+.top.scrolled { background: var(--ciel); box-shadow: 0 3px 0 var(--nuit); }
+.slot { width: 56px; height: 56px; flex: none; }
+.name { font-family: Anton, sans-serif; font-size: 30px; color: var(--brun); text-decoration: none; letter-spacing: 0; }
+.nav { margin-left: auto; display: flex; gap: 10px; }
+.nav .btn { font-size: 13px; padding: 10px 14px; }
+.nav .btn.on { background: var(--jaune); }
+.short { display: none; }
+
+/* bandeau défilant */
+.ticker { background: var(--nuit); border-block: var(--trait); overflow: hidden; padding: 14px 0; }
+.ticker .track { display: flex; gap: 28px; width: max-content; animation: tick 28s linear infinite; font: 400 30px/1 Anton, sans-serif; text-transform: uppercase; }
+.ticker span:nth-child(3n+1) { color: var(--blanc); } .ticker span:nth-child(3n+2) { color: var(--jaune); } .ticker span:nth-child(3n) { color: var(--rose); }
+.ticker i { color: var(--brule); font-style: normal; }
+@keyframes tick { to { transform: translateX(-50%); } }
+
+/* sections */
+.sec { padding: 96px 0; }
+.sec.nuit { background: var(--nuit); color: var(--blanc); }
+.sec.rose { background: var(--rose); }
+.sec.creme { background: var(--creme); }
+.sec-head { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: end; margin-bottom: 48px; }
+.sec-head h2 { font-size: clamp(48px, 7vw, 92px); }
+.sec-head p { font-size: 17px; line-height: 1.5; max-width: 420px; }
+
+/* cartes */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.card { position: relative; display: flex; flex-direction: column; min-height: 380px; padding: 24px; border: var(--trait); border-radius: 18px;
+  color: var(--nuit); text-decoration: none; box-shadow: 7px 7px 0 var(--brule); transition: transform .15s, box-shadow .15s; overflow: hidden; }
+.card:hover { transform: translate(-3px, -3px) rotate(-.6deg); box-shadow: 10px 10px 0 var(--brule); }
+.card.jaune { background: var(--jaune); } .card.rose { background: var(--rose); } .card.menthe { background: var(--menthe); } .card.blanc { background: var(--blanc); } .card.lavande { background: var(--lavande); }
+.card .num { font: 400 104px/.85 Anton, sans-serif; }
+.card .num sup { font-size: 34px; vertical-align: top; margin-left: 4px; }
+.card img { position: absolute; right: -10px; top: 70px; width: 58%; filter: drop-shadow(5px 6px 0 rgba(22, 20, 43, .25)); transition: transform .3s; }
+.card:hover img { transform: rotate(8deg) scale(1.06); }
+.card h3 { margin-top: auto; font-size: 34px; }
+.card p { margin-top: 8px; font-size: 15px; line-height: 1.45; max-width: 92%; }
+.card .go { margin-top: 16px; font: 700 14px/1 "Open Sans", sans-serif; text-transform: uppercase; }
+
+/* pied de page */
+footer { background: var(--nuit); color: var(--blanc); padding: 40px 0; border-top: var(--trait); }
+footer .wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+footer img { width: 44px; }
+footer .name { color: var(--blanc); font-size: 26px; }
+footer small { margin-left: auto; opacity: .75; font-size: 13px; }
+
+/* boîte de connexion */
+dialog { margin: auto; border: var(--trait); border-radius: 18px; padding: 28px; width: min(420px, calc(100% - 32px)); box-shadow: 8px 8px 0 var(--nuit); background: var(--creme); color: var(--nuit); }
+dialog::backdrop { background: rgba(22, 20, 43, .6); }
+dialog h2 { font-size: 44px; margin-bottom: 8px; }
+dialog p { font-size: 14px; line-height: 1.45; margin-bottom: 18px; }
+label { font: 700 13px/1 "Open Sans", sans-serif; text-transform: uppercase; display: block; margin-bottom: 8px; }
+input[type=text] { width: 100%; font: 400 18px "Open Sans", sans-serif; letter-spacing: -.028em; padding: 13px 14px; border: var(--trait); border-radius: 12px; background: var(--blanc); color: var(--nuit); }
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+@media (max-width: 900px) {
+  .sec-head { grid-template-columns: 1fr; }
+  .cards { grid-template-columns: 1fr; }
+  .card { min-height: 300px; }
+  .card img { width: 42%; top: 24px; }
+}
+@media (max-width: 640px) {
+  .top { padding: 10px 16px; gap: 8px; }
+  .slot { width: 44px; height: 44px; }
+  .top .name { display: none; }
+  .nav { gap: 6px; }
+  .nav .btn { font-size: 11px; padding: 9px 9px; box-shadow: 3px 3px 0 var(--nuit); }
+  .long { display: none; } .short { display: inline; }
+  .wrap { padding: 0 16px; }
+  .sec { padding: 64px 0; }
+  .outline { -webkit-text-stroke-width: 7px; text-shadow: 5px 5px 0 var(--nuit); }
+  footer small { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ticker .track { animation: none; } }
+.sec.nuit .outline { text-shadow: 7px 7px 0 var(--brule); }
+.mini-av { width: 22px; height: 22px; object-fit: contain; margin: -4px 0; }
+
+/* nuages qui traversent le ciel (accueil, classement) */
+.cloud { position: absolute; aspect-ratio: 220 / 90; height: auto !important; opacity: .95; animation: drift linear infinite;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 90'%3E%3Cpath fill='%23F4FAFF' d='M30 88a28 28 0 0 1 4-56 40 40 0 0 1 74-14 34 34 0 0 1 56 10 30 30 0 0 1 26 60z'/%3E%3C/svg%3E") no-repeat center/contain; }
+@keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
+
+/* pied de page : réseaux */
+footer .socials { display: flex; gap: 10px; align-items: center; }
+footer .socials a { margin: 0 !important; opacity: 1 !important; display: grid; place-items: center; width: 40px; height: 40px; border: 2px solid var(--blanc); border-radius: 12px; transition: background .15s; }
+footer .socials a:hover { background: var(--brule); }
+footer .socials svg { width: 22px; height: 22px; fill: none; stroke: var(--blanc); stroke-width: 2; }
+footer .socials .tt { fill: var(--blanc); stroke: none; }

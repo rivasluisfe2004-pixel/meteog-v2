@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MétéOG · Classement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=9">
+<style>
+  .board { padding: 104px 0 40px; position: relative; overflow: hidden; }
+  .board-top { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; }
+  .me-score { display: inline-block; background: var(--nuit); color: var(--jaune); border: var(--trait); border-radius: 12px; padding: 8px 16px; box-shadow: 5px 5px 0 var(--brule); font: 400 40px/1 Anton, sans-serif; }
+  .me-label { font: 700 16px/1 "Open Sans", sans-serif; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  /* podium en nuages (Figma : 2e à gauche, 1er au milieu, 3e à droite, ils se chevauchent) */
+  .clouds { position: relative; aspect-ratio: 1200 / 500; container-type: inline-size; margin-top: 10px; }
+  .cl { position: absolute; aspect-ratio: 536 / 372; background: url(assets/nuage_podium.svg) no-repeat center/contain; animation: bob 4s ease-in-out infinite; }
+  .cl.p1 { left: 31.5%; top: 0; width: 44%; animation-delay: -1.3s; }
+  .cl.p2 { left: 1%; top: 12%; width: 40%; z-index: 1; }
+  .cl.p3 { left: 61%; top: 33%; width: 37%; z-index: 1; animation-delay: -2.6s; }
+  @keyframes bob { 50% { transform: translateY(-12px); } }
+  .cl .txt { position: absolute; left: 12%; right: 10%; top: 36%; text-align: center; }
+  .cl h3 { font: 700 calc(5.6cqw * var(--k, 1))/1.1 "Open Sans", sans-serif; letter-spacing: -.028em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cl p { font: 400 6.6cqw/1.15 Anton, sans-serif; color: var(--jaune); letter-spacing: .01em; }
+  .p2 h3, .p3 h3 { font-size: calc(5.2cqw * var(--k, 1)); } .p2 p, .p3 p { font-size: 6.1cqw; }
+  .medal { position: absolute; width: 10cqw; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font: 700 8.3cqw/1 "Open Sans", sans-serif; }
+  .medal span { display: block; margin-top: -.08em; }
+  .p1 .medal { right: 2%; top: 3%; background: #726200; box-shadow: 0 0 0 .7cqw #FDDA00; color: #FDDA00; rotate: 16deg; }
+  .p2 .medal { left: 4%; top: 8%; background: #909090; box-shadow: 0 0 0 .7cqw #C9C9C9; color: #C9C9C9; rotate: -4deg; }
+  .p3 .medal { right: 0; top: 4%; background: #613624; box-shadow: 0 0 0 .7cqw #BA6C4D; color: #BA6C4D; rotate: 18deg; }
+  .cl .pav { position: absolute; left: 3%; top: 10%; width: 17%; rotate: -10deg; }
+  .tilt { background: var(--rose); padding: 0 0 72px; position: relative; margin-top: 40px; }
+  .tilt::before { content: ""; position: absolute; left: 0; right: 0; top: -50px; height: 120px; background: var(--rose); transform: skewY(-2deg); }
+  .tilt .band { position: relative; transform: rotate(-2deg); font: 400 30px/1 Anton, sans-serif; color: var(--blanc); text-transform: uppercase; white-space: nowrap; overflow: hidden; padding: 0 0 48px; margin-top: -24px; }
+  .tilt .band span { display: inline-block; animation: tick 40s linear infinite; }
+  .tilt .wrap { position: relative; }
+  .board h1 { margin-bottom: 0 !important; font-size: clamp(60px, 10vw, 132px); }
+  table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+  th { text-align: left; font: 700 22px/1 "Open Sans", sans-serif; text-transform: uppercase; padding: 0 14px; color: var(--nuit); opacity: .8; }
+  th:last-child { text-align: right; }
+  td { background: var(--blanc); border-block: var(--trait); padding: 8px 14px; font-size: 26px; }
+  td:first-child { border-left: var(--trait); border-radius: 12px 0 0 12px; font: 400 24px/1 Anton, sans-serif; width: 64px; }
+  td:last-child { border-right: var(--trait); border-radius: 0 12px 12px 0; text-align: right; font: 400 34px/1 Anton, sans-serif; }
+  td.n { font-size: 20px; }
+  tr.me td { background: var(--jaune); }
+  .vid { display: inline-flex; align-items: center; gap: 10px; }
+  .vid i { width: 30px; height: 38px; border: 2px solid var(--nuit); border-radius: 6px; background-size: cover; background-position: center; display: grid; place-items: center; }
+  .vid i img { width: 80%; }
+  .dots { font: 400 40px/1 Anton, sans-serif; padding: 0 14px; letter-spacing: .2em; opacity: .7; }
+  .hint { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; font-weight: 700; }
+  .hint .btn { font-size: 13px; padding: 9px 12px; }
+  .empty { background: var(--blanc); border: var(--trait); border-radius: 18px; padding: 32px; text-align: center; box-shadow: 6px 6px 0 var(--nuit); }
+  .empty p { margin: 10px 0 20px; }
+  @media (max-width: 640px) {
+    th { font-size: 14px; } td { font-size: 18px; } td:last-child { font-size: 24px; }
+    .hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="index.html" class="slot" aria-label="Accueil MétéOG"><img src="assets/METEOG_symbole.svg" alt=""></a>
+  <a href="index.html" class="name">MétéOG</a>
+  <nav class="nav">
+    <a class="btn" href="index.html#modes"><span class="long">Modes de jeu</span><span class="short">Modes</span></a>
+    <a class="btn on" href="classement.html" aria-current="page"><span class="long">Classement</span><span class="short">Top</span></a>
+    <button class="btn jaune" id="login"><span class="long">Connexion</span><span class="short">Connexion</span></button>
+  </nav>
+</header>
+
+<main>
+<section class="board">
+  <div class="cloud" style="top:6%;width:200px;animation-duration:70s;animation-delay:-30s"></div>
+  <div class="cloud" style="top:38%;width:260px;animation-duration:95s;animation-delay:-70s"></div>
+  <div class="cloud" style="top:74%;width:170px;animation-duration:55s;animation-delay:-12s"></div>
+  <div class="wrap" style="position:relative">
+  <div class="board-top">
+    <div><span class="eyebrow" style="color:var(--nuit)">Les meilleurs trouveurs de réfs</span><h1 class="outline">Classement</h1></div>
+    <div id="mine"></div>
+  </div>
+  <div class="clouds" id="podium"></div>
+  </div>
+</section>
+<section class="tilt">
+  <div class="band" aria-hidden="true"><span>Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; Classement total &nbsp;&nbsp; </span></div>
+  <div class="wrap">
+  <div style="height:90px"></div>
+  <div id="out"></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><img src="assets/METEOG_symbole.svg" alt=""><span class="name">MétéOG</span><small>Agence MÉTÉOG · SAÉ 302 · TP22 · IUT de Chambéry</small></div></footer>
+
+<script src="app.js?v=9"></script>
+<script>
+const MODE = { pixel: 'Pixel', son: 'Son', associer: 'Associer', mixte: 'Mixte' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = n => n < 1e6 ? String(n).padStart(6, '0').replace(/(\d{3})(\d{3})/, '$1 $2') : n.toLocaleString('fr-FR');
+const avatar = p => esc(store.get('meteog-profil-' + p, {}).avatar || 'assets/METEOG_symbole.svg');
+// ponytail: un seul classement total (pas de points par mode : idée gardée pour plus tard)
+function render() {
+  const all = leaderboard(''), me = getPseudo();
+  const out = document.querySelector('#out');
+  const guest = me ? '' : '<p class="hint">Les parties jouées en invité ne comptent pas : <button class="btn jaune" id="cx">Connexion</button></p>';
+  const vid = n => { const v = favVideo(n); return v ? `<span class="vid"><i style="${videoBg(v)}">${v.bg ? `<img src="${v.img}" alt="">` : ''}</i>${v.nom}</span>` : '—'; };
+  const pref = p => MODE[['pixel', 'son', 'associer', 'mixte'].sort((a, b) => (p[b] || 0) - (p[a] || 0))[0]];
+  // podium : 2e à gauche, 1er au milieu, 3e à droite
+  document.querySelector('#podium').innerHTML = [1, 0, 2].map(k => all[k] ? `
+      <div class="cl p${k + 1}">${k ? '' : `<img class="pav" src="${avatar(all[k].pseudo)}" alt="">`}<span class="medal"><span>${k + 1}</span></span>
+        <div class="txt"><h3 style="--k:${Math.min(1, 6 / all[k].pseudo.length).toFixed(2)}">${esc(all[k].pseudo)}</h3><p>${fmt(all[k].points)}</p></div></div>` : '').join('');
+  const rank = all.findIndex(p => p.pseudo === me);
+  document.querySelector('#mine').innerHTML = rank >= 0 ? `<span class="me-label">Ton score</span><span class="me-score">${fmt(all[rank].points)}</span>` : '';
+  // top 10, puis « … » et sa propre ligne si on est plus bas
+  const row = (p, k) => `<tr class="${me && p.pseudo === me ? 'me' : ''}"><td>${k + 1}</td><td>${esc(p.pseudo)}</td><td class="n hide-sm">${pref(p)}</td><td class="n hide-sm">${vid(p.pseudo)}</td><td>${fmt(p.points)}</td></tr>`;
+  out.innerHTML = `${guest}
+    <table><thead><tr><th>#</th><th>Pseudo</th><th class="hide-sm">Mode préf.</th><th class="hide-sm">Vidéo préf.</th><th>Score</th></tr></thead><tbody>
+    ${all.slice(0, 10).map(row).join('')}
+    ${rank >= 10 ? `<tr><td colspan="5" class="dots" style="background:none;border:0;text-align:left">…</td></tr>${row(all[rank], rank)}` : ''}
+    </tbody></table>`;
+  document.querySelector('#cx')?.addEventListener('click', openLogin);
+
+}
+render();
+</script>
+</body>
+</html>

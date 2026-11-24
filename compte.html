@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MétéOG · Mon compte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=9">
+<style>
+  .acc { padding: 100px 0 72px; display: grid; gap: 28px; }
+
+  /* carte profil */
+  .profil { position: relative; border: var(--trait); border-radius: 22px; box-shadow: 8px 8px 0 var(--nuit); overflow: hidden; background: var(--ciel); padding: 28px; }
+  .profil.b-ciel { background: var(--ciel); } .profil.b-rose { background: var(--rose); } .profil.b-menthe { background: var(--menthe); }
+  .profil.b-lavande { background: var(--lavande); } .profil.b-jaune { background: var(--jaune); } .profil.b-creme { background: var(--creme); }
+  .profil.b-nuit { background: var(--nuit); color: var(--blanc); }
+  .profil .deco { position: absolute; inset: 0; pointer-events: none; }
+  .profil .deco img { position: absolute; width: 120px; opacity: .9; }
+  .profil .deco img:nth-child(1) { right: 4%; top: 48%; rotate: 12deg; }
+  .profil .deco img:nth-child(2) { right: 20%; bottom: -24px; width: 150px; rotate: -8deg; }
+  .profil .deco img:nth-child(3) { right: 36%; top: -30px; width: 96px; rotate: 6deg; }
+  .profil-top { position: relative; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .av { width: 148px; height: 148px; flex: none; border-radius: 50%; background: var(--blanc); border: var(--trait); box-shadow: 5px 5px 0 var(--nuit); display: grid; place-items: center; overflow: hidden; }
+  .av img { width: 82%; height: 82%; object-fit: contain; }
+  .who h1 { display: block; font-size: clamp(48px, 8vw, 96px); overflow-wrap: anywhere; }
+  .who .meta { font-size: 15px; margin-top: 6px; opacity: .85; }
+  .actions { position: absolute; top: 0; right: 0; display: flex; gap: 10px; }
+  .badges { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .badge { border: 2px solid var(--nuit); border-radius: 999px; padding: 5px 12px; font: 700 14px/1.2 "Open Sans", sans-serif; background: var(--blanc); color: var(--nuit); }
+  .badge.j { background: var(--jaune); } .badge.r { background: var(--rose); } .badge.m { background: var(--menthe); } .badge.l { background: var(--lavande); }
+  .bio { position: relative; margin-top: 18px; padding: 14px 16px; border-radius: 14px; background: rgba(253, 253, 253, .75); border: 2px solid var(--nuit); color: var(--nuit); font-size: 15px; line-height: 1.5; max-width: 640px; }
+  .bio.empty { border-style: dashed; background: rgba(253, 253, 253, .4); cursor: pointer; }
+
+  /* stats */
+  .box { background: var(--blanc); border: var(--trait); border-radius: 22px; box-shadow: 8px 8px 0 var(--nuit); padding: 28px; }
+  .box h2 { font-size: 40px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat { border: var(--trait); border-radius: 16px; padding: 18px; }
+  .stat:nth-child(1) { background: var(--jaune); } .stat:nth-child(2) { background: var(--rose); } .stat:nth-child(3) { background: var(--menthe); } .stat:nth-child(4) { background: var(--lavande); }
+  .stat b { font: 400 clamp(32px, 5vw, 60px)/1 Anton, sans-serif; display: block; white-space: nowrap; }
+  .stat span { font: 700 13px/1.2 "Open Sans", sans-serif; text-transform: uppercase; }
+  .bar { margin-top: 18px; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 14px; }
+  .bar div { flex: 1; height: 18px; border: var(--trait); border-radius: 999px; overflow: hidden; background: var(--creme); }
+  .bar i { display: block; height: 100%; background: var(--brule); }
+
+  /* vitrine : cartes de collection */
+  .vitrine { display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); gap: 22px; }
+  .ref { border: var(--trait); border-radius: 18px; overflow: hidden; box-shadow: 6px 6px 0 var(--brule); background: var(--rose); display: flex; flex-direction: column; min-height: 300px; transition: transform .15s; }
+  .ref:hover { transform: translate(-2px, -3px) rotate(-1deg); }
+  .ref:nth-child(2) { background: var(--menthe); } .ref:nth-child(3) { background: var(--lavande); }
+  .ref .pic { position: relative; aspect-ratio: 4 / 3; background: var(--creme); border-bottom: var(--trait); display: grid; place-items: center; }
+  .ref .pic img { width: 70%; height: 82%; object-fit: contain; }
+  .ref .pic .pill { position: absolute; left: 10px; top: 10px; font-size: 11px; padding: 5px 9px; }
+  .ref .txt { padding: 14px; display: flex; flex-direction: column; flex: 1; }
+  .ref h3 { font-size: 26px; }
+  .ref small { display: flex; justify-content: space-between; margin-top: auto; padding-top: 10px; border-top: 2px solid var(--nuit); font-weight: 700; font-size: 13px; }
+  .ref.vide { background: transparent; border-style: dashed; box-shadow: none; place-items: center; justify-content: center; text-align: center; font-weight: 700; cursor: pointer; color: var(--nuit); }
+
+  .titres { display: flex; flex-wrap: wrap; gap: 10px; }
+  .titre { border: var(--trait); border-radius: 12px; padding: 10px 14px; background: var(--jaune); font-weight: 700; font-size: 14px; }
+  .titre.lock { background: var(--creme); opacity: .55; }
+  .titre small { display: block; font-weight: 400; font-size: 12px; margin-top: 3px; }
+  .titre.lock { opacity: .75; }
+  .favv { display: flex; gap: 22px; align-items: center; }
+  .favv i { flex: none; width: 140px; aspect-ratio: 4 / 5; border: var(--trait); border-radius: 14px; box-shadow: 5px 5px 0 var(--brule); background-size: cover; background-position: center; display: grid; place-items: center; }
+  .favv i img { width: 70%; }
+  .favv h3 { font-size: 34px; } .favv p { margin: 6px 0 14px; max-width: 480px; }
+  .prog { display: block; height: 8px; margin-top: 8px; border: 2px solid var(--nuit); border-radius: 99px; background: var(--blanc); overflow: hidden; }
+  .prog b { display: block; height: 100%; background: var(--brule); }
+  .niv { font: 700 13px/1 "Open Sans", sans-serif; text-transform: uppercase; margin: 18px 0 10px; display: inline-block; padding: 6px 10px; border: 2px solid var(--nuit); border-radius: 99px; }
+  .niv-normal { background: var(--menthe); } .niv-difficile { background: var(--orange); } .niv-leg { background: var(--nuit); color: var(--jaune); }
+  .niv-leg + .titres .titre:not(.lock) { background: var(--nuit); color: var(--jaune); }
+
+  .hist { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .hist li { display: flex; justify-content: space-between; gap: 12px; border: 2px solid var(--nuit); border-radius: 12px; padding: 10px 14px; background: var(--creme); font-size: 14px; }
+  .hist b { font: 400 22px/1 Anton, sans-serif; }
+
+  /* fenêtre Personnaliser */
+  #edit { width: min(720px, calc(100% - 32px)); max-height: calc(100vh - 40px); }
+  #edit h3 { font-size: 24px; margin: 22px 0 10px; }
+  .grid-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 10px; }
+  .grid-pick button { aspect-ratio: 1; border: var(--trait); border-radius: 14px; background: var(--blanc); padding: 8px; cursor: pointer; }
+  .grid-pick button img { width: 100%; height: 100%; object-fit: contain; }
+  .grid-pick button[aria-pressed=true] { background: var(--jaune); box-shadow: 3px 3px 0 var(--nuit); }
+  .grid-pick.refs { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+  .grid-pick.refs button { aspect-ratio: auto; display: grid; gap: 6px; font: 700 12px/1.2 "Open Sans", sans-serif; }
+  .grid-pick.refs button img { height: 56px; }
+  .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatches button { width: 44px; height: 44px; border-radius: 50%; border: var(--trait); cursor: pointer; }
+  .swatches button[aria-pressed=true] { outline: 3px solid var(--brule); outline-offset: 3px; }
+  textarea { width: 100%; font: 400 16px/1.45 "Open Sans", sans-serif; letter-spacing: -.028em; padding: 12px 14px; border: var(--trait); border-radius: 12px; resize: vertical; background: var(--blanc); color: var(--nuit); }
+  .count { font-size: 12px; opacity: .7; text-align: right; margin-top: 4px; }
+
+  .vide-compte { text-align: center; padding: 48px 24px; }
+  .vide-compte h1 { font-size: clamp(48px, 9vw, 88px); margin-bottom: 14px; }
+
+  @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } .vitrine { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } }
+  @media (max-width: 640px) {
+    .profil, .box { padding: 20px; }
+    .av { width: 104px; height: 104px; }
+    .actions { position: static; order: -1; width: 100%; justify-content: flex-end; }
+    .profil .deco img { width: 80px !important; } .profil .deco img:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="index.html" class="slot" aria-label="Accueil MétéOG"><img src="assets/METEOG_symbole.svg" alt=""></a>
+  <a href="index.html" class="name">MétéOG</a>
+  <nav class="nav">
+    <a class="btn" href="index.html#modes"><span class="long">Modes de jeu</span><span class="short">Modes</span></a>
+    <a class="btn" href="classement.html"><span class="long">Classement</span><span class="short">Top</span></a>
+    <button class="btn jaune on" id="login"><span class="long">Connexion</span><span class="short">Connexion</span></button>
+  </nav>
+</header>
+
+<main class="acc wrap" id="acc"></main>
+
+<dialog id="edit">
+  <form method="dialog" id="editForm">
+    <h2 class="outline">Personnaliser</h2>
+    <h3>Photo de profil</h3>
+    <div class="grid-pick" id="pickAv"></div>
+    <h3>Bannière</h3>
+    <div class="swatches" id="pickBan"></div>
+    <h3>Titre</h3>
+    <div class="grid-pick refs" id="pickTitre" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div>
+    <h3>Bio</h3>
+    <textarea id="bio" rows="3" maxlength="140" placeholder="Ta réf préférée, ton mème de chevet…"></textarea>
+    <div class="count" id="bioCount">0/140</div>
+    <h3>Ma vitrine · 3 réfs favorites</h3>
+    <div class="grid-pick refs" id="pickVit"></div>
+    <div class="row" style="position:sticky;bottom:-28px;background:var(--creme);padding:14px 0 4px">
+      <button class="btn jaune" value="ok">Enregistrer</button>
+      <button class="btn" value="">Annuler</button>
+    </div>
+  </form>
+</dialog>
+
+<footer><div class="wrap"><img src="assets/METEOG_symbole.svg" alt=""><span class="name">MétéOG</span><small>Agence MÉTÉOG · SAÉ 302 · TP22 · IUT de Chambéry</small></div></footer>
+
+<script src="refs.js?v=9"></script>
+<script src="app.js?v=9"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = n => String(n).padStart(6, '0').replace(/(\d{3})(\d{3})/, '$1 $2');
+const MODE = { pixel: 'Pixel', son: 'Son', associer: 'Associer', mixte: 'Mixte' };
+const BANNIERES = ['ciel', 'rose', 'menthe', 'lavande', 'jaune', 'creme', 'nuit'];
+
+// statistiques calculées à partir des parties de ce pseudo
+function stats() {
+  const mine = getScores().filter(s => s.pseudo === getPseudo());
+  const found = {}; let manches = 0, trouvees = 0;
+  mine.forEach(s => { (s.found || []).forEach(t => found[t] = (found[t] || 0) + 1); trouvees += (s.found || []).length; manches += s.manches || 0; });
+  return {
+    mine, found, trouvees, manches,
+    parties: mine.length,
+    meilleur: Math.max(0, ...mine.map(s => s.score)),
+    combo: Math.max(0, ...mine.map(s => s.best || 0)),
+    parMode: Object.keys(MODE).map(m => [m, mine.filter(s => s.mode === m).length]),
+    modes: new Set(mine.map(s => s.mode)).size,
+    record: m => Math.max(0, ...mine.filter(s => s.mode === m).map(s => s.score)),
+    parfaites: mine.filter(s => s.manches && (s.found || []).length >= s.manches).length,
+    distinctes: Object.keys(found).length,
+  };
+}
+// titres = défis : chaque défi réussi débloque un titre (normal, difficile, légendaire)
+const DEFIS = [
+  { t: 'Chasseur de réfs', niv: 'normal', aide: 'Crée ton compte', v: () => 1, but: 1 },
+  { t: 'Premier bulletin', niv: 'normal', aide: 'Joue 1 partie', v: s => s.parties, but: 1 },
+  { t: 'Touche-à-tout', niv: 'normal', aide: 'Joue aux 3 modes', v: s => s.modes, but: 3 },
+  { t: 'Roi du combo', niv: 'normal', aide: 'Fais un combo x3', v: s => s.combo, but: 3 },
+  { t: 'Habitué du bulletin', niv: 'normal', aide: 'Joue 10 parties', v: s => s.parties, but: 10 },
+  { t: 'Œil de lynx', niv: 'difficile', aide: '5 000 pts en image pixelisée', v: s => s.record('pixel'), but: 5000 },
+  { t: 'Oreille absolue', niv: 'difficile', aide: '5 000 pts en extrait sonore', v: s => s.record('son'), but: 5000 },
+  { t: 'Sans faute', niv: 'difficile', aide: 'Trouve toutes les réfs d’une partie', v: s => s.parfaites, but: 1 },
+  { t: 'Mémologue', niv: 'difficile', aide: 'Trouve 50 réfs', v: s => s.trouvees, but: 50 },
+  { t: 'Météorologue en chef', niv: 'légendaire', aide: '10 000 pts en une partie', v: s => s.meilleur, but: 10000 },
+  { t: 'Grand chelem', niv: 'légendaire', aide: '10 parties sans faute', v: s => s.parfaites, but: 10 },
+  { t: 'Encyclopédie du web', niv: 'légendaire', aide: 'Trouve chaque réf du jeu au moins une fois', v: s => s.distinctes, but: REFS.length },
+  { t: 'Archiviste du web', niv: 'légendaire', aide: 'Joue 100 parties', v: s => s.parties, but: 100 },
+];
+DEFIS.forEach(d => d.ok = s => d.v(s) >= d.but);
+const TITRES = DEFIS;
+const NIV = { normal: 'Normal', difficile: 'Difficile', 'légendaire': 'Légendaire' };
+
+function render() {
+  const acc = $('#acc');
+  if (!getPseudo()) {
+    acc.innerHTML = `<section class="box vide-compte"><h1 class="outline">Ton compte</h1>
+      <p style="margin-bottom:22px">Connecte-toi avec un pseudo pour avoir ta photo de profil, tes stats et ta vitrine de réfs.</p>
+      <button class="btn jaune big" id="go">Connexion</button></section>`;
+    $('#go').onclick = openLogin;
+    return;
+  }
+  const p = getProfil(), s = stats();
+  if (!p.depuis) { p.depuis = Date.now(); setProfil(p); }
+  const depuis = new Date(p.depuis).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+  const taux = s.manches ? Math.round(s.trouvees / s.manches * 100) : 0;
+  const colors = ['j', 'r', 'm', 'l'];
+  const fav = favVideo(getPseudo());
+  const vit = p.vitrine.map(t => REFS.find(r => r.titre === t)).filter(Boolean);
+
+  acc.innerHTML = `
+  <section class="profil b-${p.banniere}">
+    <div class="deco" aria-hidden="true"><img src="assets/04_icone_pluie.svg" alt=""><img src="assets/09_icone_arc_en_ciel.svg" alt=""><img src="assets/05_icone_orage.svg" alt=""></div>
+    <div class="profil-top">
+      <div class="actions"><button class="btn jaune" id="perso">✎ Personnaliser</button><button class="btn" id="out">Déconnexion</button></div>
+      <div class="av"><img src="${esc(p.avatar)}" alt="Photo de profil"></div>
+      <div class="who">
+        <span class="pill">${esc(p.titre)}</span>
+        <h1 class="outline" style="margin-top:10px">${esc(getPseudo())}</h1>
+        <p class="meta">${s.parties} partie${s.parties > 1 ? 's' : ''} · ${s.trouvees} réf${s.trouvees > 1 ? 's' : ''} trouvée${s.trouvees > 1 ? 's' : ''} · Depuis ${depuis}</p>
+      </div>
+    </div>
+    <div class="badges">${s.parMode.filter(([, n]) => n).map(([m, n], k) => `<span class="badge ${colors[k]}">${MODE[m]} ×${n}</span>`).join('')
+      || '<span class="badge">Aucune partie pour l’instant</span>'}</div>
+    <div class="bio ${p.bio ? '' : 'empty'}" id="bioBox">${p.bio ? esc(p.bio) : '✦ Ajoute une bio, un titre et tes réfs favorites pour personnaliser ton profil.'}</div>
+  </section>
+
+  <section class="box">
+    <h2>Mes stats</h2>
+    <div class="stats">
+      <div class="stat"><b>${fmt(s.meilleur)}</b><span>Meilleur score</span></div>
+      <div class="stat"><b>${s.parties}</b><span>Parties jouées</span></div>
+      <div class="stat"><b>${s.trouvees}</b><span>Réfs trouvées</span></div>
+      <div class="stat"><b>x${s.combo}</b><span>Meilleur combo</span></div>
+    </div>
+    <div class="bar"><span>Réussite</span><div><i style="width:${taux}%"></i></div><span>${taux} %</span></div>
+  </section>
+
+  <section class="box">
+    <h2>🏆 Ma vitrine <span class="pill" style="font-size:12px">Mes réfs favorites</span></h2>
+    <div class="vitrine">
+      ${vit.map((r, k) => `<article class="ref"><div class="pic"><span class="pill">Fav #${k + 1}</span><img src="${esc(r.image || 'assets/METEOG_symbole.svg')}" alt=""></div>
+        <div class="txt"><h3>${esc(r.titre)}</h3><small><span>Trouvée ×${s.found[r.titre] || 0}</span><span>${r.melodie || r.son ? '♪ Son' : '▦ Image'}</span></small></div></article>`).join('')}
+      ${Array.from({ length: 3 - vit.length }, () => '<button class="ref vide" data-edit>+ Choisir une réf</button>').join('')}
+    </div>
+  </section>
+
+  <section class="box">
+    <h2>Ma vidéo préférée <span class="pill" style="font-size:12px">Battle de la semaine</span></h2>
+    ${fav ? `<div class="favv"><i style="${videoBg(fav)}">${fav.bg ? `<img src="${fav.img}" alt="">` : ''}</i>
+      <div><h3>${fav.nom}</h3><p>${fav.txt}</p><a class="btn nuit" href="https://www.instagram.com/" target="_blank" rel="noopener">La revoir sur Instagram ▶</a></div></div>`
+      : '<p>Pas encore de préférée. <a href="index.html#battle">Garde tes vidéos dans la Battle ▶</a></p>'}
+  </section>
+
+  <section class="box">
+    <h2>Titres <span class="pill" style="font-size:12px">${DEFIS.filter(d => d.ok(s)).length}/${DEFIS.length} défis</span></h2>
+    ${Object.keys(NIV).map(n => `<h3 class="niv niv-${n === 'légendaire' ? 'leg' : n}">${NIV[n]}</h3>
+    <div class="titres">${DEFIS.filter(d => d.niv === n).map(d => { const ok = d.ok(s), v = Math.min(d.v(s), d.but);
+      return `<div class="titre ${ok ? '' : 'lock'}">${ok ? '' : '🔒 '}${d.t}<small>${d.aide}</small>${ok ? '' : `<i class="prog"><b style="width:${v / d.but * 100}%"></b></i><small>${v.toLocaleString('fr-FR')} / ${d.but.toLocaleString('fr-FR')}</small>`}</div>`; }).join('')}</div>`).join('')}
+  </section>
+
+  <section class="box">
+    <h2>Dernières parties</h2>
+    ${s.mine.length ? `<ul class="hist">${[...s.mine].sort((a, b) => b.date - a.date).slice(0, 5).map(g => `<li><span>${MODE[g.mode] || ''} · ${new Date(g.date).toLocaleDateString('fr-FR')} · ${(g.found || []).length}/${g.manches || '?'} réfs</span><b>${fmt(g.score)}</b></li>`).join('')}</ul>`
+      : '<p>Pas encore de partie. <a href="jeu.html?mode=pixel">Lance-toi ▶</a></p>'}
+  </section>`;
+
+  $('#perso').onclick = openEdit;
+  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = openEdit);
+  if (!p.bio) $('#bioBox').onclick = openEdit;
+  $('#out').onclick = () => { store.set('meteog-pseudo', ''); location.href = 'index.html'; };
+}
+
+// ---- Personnaliser
+let draft;
+function pick(container, items, isOn, label, onPick) {
+  container.innerHTML = '';
+  items.forEach(it => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.setAttribute('aria-pressed', isOn(it)); label(b, it);
+    b.onclick = () => { onPick(it); openEdit(true); };
+    container.append(b);
+  });
+}
+function openEdit(keep) {
+  if (keep !== true) { draft = getProfil(); draft.vitrine = [...draft.vitrine]; $('#bio').value = draft.bio; }
+  const s = stats();
+  pick($('#pickAv'), AVATARS, a => a === draft.avatar, (b, a) => { b.innerHTML = `<img src="${esc(a)}" alt="">`; b.ariaLabel = 'Choisir cet avatar'; }, a => draft.avatar = a);
+  pick($('#pickBan'), BANNIERES, c => c === draft.banniere, (b, c) => { b.style.background = `var(--${c})`; b.ariaLabel = 'Bannière ' + c; }, c => draft.banniere = c);
+  pick($('#pickTitre'), TITRES.filter(x => x.ok(s)), x => x.t === draft.titre, (b, x) => b.textContent = x.t, x => draft.titre = x.t);
+  pick($('#pickVit'), REFS, r => draft.vitrine.includes(r.titre),
+    (b, r) => { b.innerHTML = `<img src="${esc(r.image || 'assets/METEOG_symbole.svg')}" alt=""><span></span>`; b.lastChild.textContent = r.titre; },
+    r => { const v = draft.vitrine, k = v.indexOf(r.titre); k >= 0 ? v.splice(k, 1) : v.length < 3 && v.push(r.titre); });
+  $('#bioCount').textContent = `${$('#bio').value.length}/140`;
+  if (!$('#edit').open) { $('#edit').returnValue = ''; $('#edit').showModal(); }
+}
+$('#bio').oninput = () => $('#bioCount').textContent = `${$('#bio').value.length}/140`;
+$('#edit').addEventListener('close', () => {
+  if ($('#edit').returnValue !== 'ok') return;
+  draft.bio = $('#bio').value.trim().slice(0, 140);
+  setProfil(draft); render(); paintLogin();
+});
+
+render();
+</script>
+</body>
+</html>
